@@ -4,8 +4,8 @@ This is custom octave compiler. compiler works for scaler , vector , matrix.  pe
 addition ,  subtraction , standard matrix multiplication and elementwise matrix multiplication 
 
 ## BUILD
-download [javacc](https://codeload.github.com/javacc/javacc/zip/7.0.5)
-past to octave folder
+download [javacc](https://codeload.github.com/javacc/javacc/zip/7.0.5)  
+past javacc-7.0.5.jar to octave folder
 execute BUILD.cmd
 
 ```cmd
