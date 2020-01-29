@@ -1,0 +1,141 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{
+  static = true;}PARSER_BEGIN(octave)package pkg;
+import pkg.Data;
+
+public class octave{
+  static Data data = new Data();  public static void main(String args []) throws ParseException  {
+    
+    System.out.println("\nWelcome to Universal Complex Scripting Calculator by UCSC, Sri Lanka.");
+    System.out.println("Version: 1.0");    octave parser = new octave(System.in);    A:while (true)    {      System.out.print(">>");      try      {        switch (octave.one_line())        {          case 0 :
+		  	data.operate();
+		    data.printVal();          	break;          case 1 :           	break;
+          case 2 :
+          	data.clear();
+          	break A;          default :           	break;        }      }      catch (Exception e)      {        System.out.println(e.getMessage());        octave.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops");        System.out.println(e.getMessage());        break;      }
+      finally
+      {
+        data.lineClear();
+      }    }  }}PARSER_END(octave)SKIP :{  " "
+| "\r"| "\t"}TOKEN : /* OPERATORS */{  < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < ELEMULTI : ".*" >
+| < ASSIMENT : "=" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >}TOKEN :{  < CONSTANT : (< DIGIT >)+ >
+| < #DIGIT : [ "0"-"9" ] >
+| < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >}
+
+TOKEN :
+{
+  < EOL : "\n">}int one_line() :{}{  < EOL >	{
+	  return 1;
+  	}
+
+| (ele()) (expression())? ((< SEMICOLON >) ?) {
+  	data.setPrintLock(token.image.hashCode());
+  }(<EOL>){
+	return data.getExit()?0:2;
+	}}
+void expression() :
+{}
+{
+  	(    (< ASSIMENT >) {
+    	data.setOp(token.image);
+    }((num())|((arr())|(ele())(exp())?))
+ 	)
+| multiply()
+| sum()
+| elemulti()
+}
+
+void sum() :
+{}
+{
+	(< PLUS >) {
+		data.setOp(token.image);
+	   }(ele())
+| (< MINUS >) {
+	data.setOp(token.image);
+  }(ele())
+}
+
+
+
+void multiply() :
+{}
+{
+	(< MULTIPLY >) {
+	  data.setOp(token.image);
+	}(ele())
+}
+
+void elemulti() :
+{}
+{
+	(< ELEMULTI >) {
+		data.setOp(token.image);
+	}((num()) | (ele()))
+}
+
+void exp() :
+{}
+{
+  multiply()
+| sum()
+| elemulti()
+}
+
+void arr() :
+{}
+{
+	("[")(mat())("]")
+}
+
+void mat() :
+{}
+{	  (num())((matop())(num()))*
+}
+
+void matop() :
+{}
+{
+  	(< COMMA > | < SEMICOLON >){
+	  data.setMatDim(token.image);
+	}
+}
+
+void num():
+{}
+{
+		  (((<MINUS>)?) {
+	  data.setScaler(token.image.hashCode());
+	}(cons()))
+}
+
+void cons() :
+{}
+{	< CONSTANT >{
+	  	int val = Integer.parseInt(token.image) * data.getScaler();
+		data.setCons(val);
+	}
+}
+
+void ele() :
+{}
+{	< Id >
+	{
+	  	  String id = token.image;
+		  if(id.hashCode() == "clear".hashCode()) {
+		    data.clear();
+		  }else if(id.hashCode() == "clc".hashCode()){
+		    data.clc();
+		  }else if(id.hashCode() == "exit".hashCode()) {
+		    data.exit();
+		  }else {
+		    data.setId(token.image);
+		  }
+	}
+}
